@@ -1,9 +1,29 @@
-const API_BASE = 'http://localhost:5000';
+// Smart API base URL detection - works in both Docker and development
+function getApiBaseUrl() {
+    // If we're running in development (opening file directly or through localhost)
+    if (window.location.hostname === 'localhost' || 
+        window.location.hostname === '127.0.0.1' ||
+        window.location.protocol === 'file:') {
+        
+        // Use localhost for backend when developing locally
+        return 'http://localhost:5000';
+    }
+    
+    // For Docker environment - use backend service name
+    return 'http://backend:5000';
+}
+
+const API_BASE = getApiBaseUrl();
 
 // Load tasks from backend
 async function loadTasks() {
     try {
         const response = await fetch(`${API_BASE}/tasks`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const tasks = await response.json();
        
         const tasksContainer = document.getElementById('tasksList');
@@ -53,9 +73,12 @@ document.getElementById('taskForm').addEventListener('submit', async (e) => {
             titleInput.value = '';
             descriptionInput.value = '';
             loadTasks(); // Reload the tasks list
+        } else {
+            console.error('Failed to create task:', response.status);
         }
     } catch (error) {
         console.error('Error creating task:', error);
+        alert('Error creating task. Make sure the backend is running on port 5000.');
     }
 });
 
@@ -68,11 +91,27 @@ async function completeTask(taskId) {
        
         if (response.ok) {
             loadTasks(); // Reload the tasks list
+        } else {
+            console.error('Failed to complete task:', response.status);
         }
     } catch (error) {
         console.error('Error completing task:', error);
     }
 }
 
+// Test backend connection on load
+async function testBackendConnection() {
+    try {
+        const response = await fetch(`${API_BASE}/tasks`);
+        console.log('Backend connection successful');
+    } catch (error) {
+        console.warn('Backend connection failed:', error);
+        console.log('API_BASE is:', API_BASE);
+    }
+}
+
 // Load tasks when page loads
-loadTasks();
+document.addEventListener('DOMContentLoaded', () => {
+    testBackendConnection();
+    loadTasks();
+});

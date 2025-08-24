@@ -215,7 +215,7 @@ docker-compose exec db psql -U postgres -d todo_app
 4. Test API endpoints
 5. Verify database changes in pgAdmin
 
-🧪 Backend Unit Tests
+## 🧪 Backend Unit Tests
 
 This project includes unit tests for the backend API routes. The tests are run using pytest and mock the database, so a running PostgreSQL instance is not required.
 

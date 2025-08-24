@@ -1,7 +1,7 @@
 # to-do-app
 This a full stack To-Do Application
 <br>
-A complete todo web application with PostgreSQL database, Flask backend API, and vanilla JavaScript frontend, fully containerized with Docker.
+A complete todo web application with PostgreSQL database, Flask backend API, and vanilla JavaScript frontend, fully containerized with Docker and backend unit testing.
 <br>
 ## 🏗️ Architecture
 - **Frontend:** HTML, CSS, Vanilla JavaScript
@@ -15,14 +15,16 @@ todo-app/
 │   ├── app.py              # Flask application
 │   ├── requirements.txt    # Python dependencies
 │   ├── Dockerfile          # Backend container config
-│   └── .env               # Database configuration
+│   ├── .env                # Database configuration
+│   └── tests/
+│       └── test_app.py     # Unit tests for backend
 ├── frontend/
 │   ├── index.html          # Main HTML file
 │   ├── style.css           # Styles
 │   ├── script.js           # Frontend logic
 │   └── Dockerfile          # Frontend container config
 ├── database/
-│   └── init.sql           # Database schema
+│   └── init.sql            # Database schema
 └── docker-compose.yml      # Multi-container setup
 ```
 ## 🚀 Quick Start with Docker (Recommended)
@@ -111,7 +113,7 @@ CORS(app)  # Add this line after creating app
 DB_HOST=localhost
 DB_NAME=todo_app
 DB_USER=postgres
-DB_PASSWORD=root
+DB_PASSWORD=123Pass.in
 ```
 
 ### 4. Docker Build Issues
@@ -145,7 +147,9 @@ Invoke-RestMethod -Uri "http://localhost:5000/tasks/1/complete" -Method Post
 ```bash
 # Connect to database
 docker-compose exec db psql -U postgres -d todo_app
-
+<br>
+#To check all the created tasks
+docker-compose exec db psql -U postgres -d todo_app -c "SELECT * FROM task;"
 # Run SQL queries
 SELECT * FROM task;
 SELECT * FROM task WHERE completed = true;
@@ -174,7 +178,7 @@ Create `backend/.env`:
 DB_HOST=localhost
 DB_NAME=todo_app
 DB_USER=postgres
-DB_PASSWORD=root
+DB_PASSWORD=123Pass.in
 ```
 
 ## 🐳 Docker Commands Cheat Sheet
@@ -210,5 +214,36 @@ docker-compose exec db psql -U postgres -d todo_app
 3. Rebuild Docker containers if needed: `docker-compose up --build`
 4. Test API endpoints
 5. Verify database changes in pgAdmin
+
+🧪 Backend Unit Tests
+
+This project includes unit tests for the backend API routes. The tests are run using pytest and mock the database, so a running PostgreSQL instance is not required.
+
+Steps to Run Tests
+
+Navigate to the backend folder:
+
+cd backend
+
+
+Run the unit tests:
+
+pytest -v
+
+
+Expected Output:
+
+====================================================================================== test session starts ======================================================================================
+platform win32 -- Python 3.10.10, pytest-8.4.1, pluggy-1.6.0 -- C:\Users\YourUser\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\YourUser\Documents\ToDoApp\to-do-app\backend
+plugins: mock-3.14.1
+collected 3 items                                                                                                                                                                                 
+
+tests/test_app.py::test_get_tasks PASSED                                                                                                                                                   [ 33%]
+tests/test_app.py::test_create_task PASSED                                                                                                                                                 [ 66%]
+tests/test_app.py::test_complete_task PASSED                                                                                                                                               [100%]
+
+======================================================================================= 3 passed in 
 
 
